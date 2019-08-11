@@ -1,0 +1,9 @@
+﻿// Copyright (c) Isaiah Williams. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Azure.WebJobs.Extensions.PartnerCenter.PartnerCenterExtensionConfigProvider", Justification = "Used to perform a conversion.")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Azure.WebJobs.Extensions.PartnerCenter.AuditRecordConverter", Justification = "Used to perform a conversion.")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Azure.WebJobs.Extensions.PartnerCenter.AzureUtilizationRecordConverter", Justification = "Used to perform a conversion.")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Azure.WebJobs.Extensions.PartnerCenter.CustomerConverter", Justification = "Used to perform a conversion.")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Azure.WebJobs.Extensions.PartnerCenter.InvoiceConverter", Justification = "Used to perform a conversion.")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Azure.WebJobs.Extensions.PartnerCenter.SubscriptionConverter", Justification = "Used to perform a conversion.")]
