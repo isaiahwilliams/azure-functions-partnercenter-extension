@@ -1,0 +1,9 @@
+pool:
+  name: Hosted Windows 2019 with VS2019
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    projects: '**/*.csproj'
+    arguments: '--configuration debug'
