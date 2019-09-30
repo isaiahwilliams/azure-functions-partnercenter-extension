@@ -30,12 +30,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
         public string ApplicationSecretName { get; set; }
 
         /// <summary>
-        /// Gets or sets the tenant identifier that owns the application.
-        /// </summary>
-        [AutoResolve]
-        public string ApplicationTenantId { get; set; }
-
-        /// <summary>
         /// Gets or sets the address of the authority to issue the token.
         /// </summary>
         [AutoResolve]
@@ -60,9 +54,15 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
         public string RefreshTokenName { get; set; }
 
         /// <summary>
-        /// Gets or sets the identifier of the target resource that is the recipient of the token being requested.
+        /// Gets or sets the scopes of the token being requested.
         /// </summary>
         [AutoResolve]
-        public string Resource { get; set; } = "https://api.partnercenter.microsoft.com";
+        public string Scopes { get; set; } = "https://api.partnercenter.microsoft.com/user_impersonation";
+
+        /// <summary>
+        /// Gets or sets the tenant identifier that owns the application.
+        /// </summary>
+        [AutoResolve]
+        public string TenantId { get; set; }
     }
 }
