@@ -45,16 +45,16 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
         /// </returns>
         public async Task<IEnumerable<AzureUtilizationRecord>> ConvertAsync(AzureUtilizationRecordAttribute input, CancellationToken cancellationToken)
         {
-            IPartner operations;
+            IPartner partner;
             IResourceCollectionEnumerator<ResourceCollection<AzureUtilizationRecord>> enumerator;
             List<AzureUtilizationRecord> utilizationRecords;
             ResourceCollection<AzureUtilizationRecord> records;
 
-            operations = PartnerService.Instance.CreatePartnerOperations(
+            partner = PartnerService.Instance.CreatePartnerOperations(
                 await provider.GetCredentialsAsync(input).ConfigureAwait(false),
                 provider.GetHttpClient(input.ApplicationId));
 
-            records = await operations.Customers[input.CustomerId]
+            records = await partner.Customers[input.CustomerId]
                 .Subscriptions[input.SubscriptionId].Utilization.Azure.QueryAsync(
                     DateTimeOffset.Parse(input.StartTime, CultureInfo.CurrentCulture),
                     DateTimeOffset.Parse(input.EndTime, CultureInfo.CurrentCulture),
@@ -63,7 +63,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
                     1000,
                     cancellationToken).ConfigureAwait(false);
 
-            enumerator = operations.Enumerators.Utilization.Azure.Create(records);
+            enumerator = partner.Enumerators.Utilization.Azure.Create(records);
 
             utilizationRecords = new List<AzureUtilizationRecord>();
 

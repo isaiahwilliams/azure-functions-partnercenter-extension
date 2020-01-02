@@ -48,19 +48,19 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
             IResourceCollectionEnumerator<SeekBasedResourceCollection<Customer>> enumerator;
             List<Customer> customers;
             SeekBasedResourceCollection<Customer> seekCustomers;
-            IPartner operations;
+            IPartner partner;
 
             customers = new List<Customer>();
 
-            operations = PartnerService.Instance.CreatePartnerOperations(
+            partner = PartnerService.Instance.CreatePartnerOperations(
                 await provider.GetCredentialsAsync(input).ConfigureAwait(false),
                 provider.GetHttpClient(input.ApplicationId));
 
             if (string.IsNullOrEmpty(input.CustomerId))
             {
-                seekCustomers = await operations.Customers.GetAsync(cancellationToken).ConfigureAwait(false);
+                seekCustomers = await partner.Customers.GetAsync(cancellationToken).ConfigureAwait(false);
 
-                enumerator = operations.Enumerators.Customers.Create(seekCustomers);
+                enumerator = partner.Enumerators.Customers.Create(seekCustomers);
 
                 while (enumerator.HasValue)
                 {
@@ -71,7 +71,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
                 return customers;
             }
 
-            customer = await operations.Customers[input.CustomerId].GetAsync(cancellationToken).ConfigureAwait(false);
+            customer = await partner.Customers[input.CustomerId].GetAsync(cancellationToken).ConfigureAwait(false);
 
             return new List<Customer> { customer };
         }

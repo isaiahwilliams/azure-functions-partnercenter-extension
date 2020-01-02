@@ -43,23 +43,23 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
         /// </returns>
         public async Task<IEnumerable<Subscription>> ConvertAsync(SubscriptionAttribute input, CancellationToken cancellationToken)
         {
-            IPartner operations;
+            IPartner partner;
             ResourceCollection<Subscription> subscriptionCollection;
             Subscription subscription;
 
-            operations = PartnerService.Instance.CreatePartnerOperations(
+            partner = PartnerService.Instance.CreatePartnerOperations(
                 await provider.GetCredentialsAsync(input).ConfigureAwait(false),
                 provider.GetHttpClient(input.ApplicationId));
 
             if (string.IsNullOrEmpty(input.SubscriptionId))
             {
-                subscriptionCollection = await operations.Customers[input.CustomerId]
+                subscriptionCollection = await partner.Customers[input.CustomerId]
                     .Subscriptions.GetAsync(cancellationToken).ConfigureAwait(false);
 
                 return subscriptionCollection.Items;
             }
 
-            subscription = await operations.Customers[input.CustomerId]
+            subscription = await partner.Customers[input.CustomerId]
                 .Subscriptions[input.SubscriptionId].GetAsync(cancellationToken).ConfigureAwait(false);
 
             return new List<Subscription> { subscription };
