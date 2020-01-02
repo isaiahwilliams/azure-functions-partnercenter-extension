@@ -39,20 +39,28 @@ steps:
     custom: msbuild
     arguments: 'build.proj /t:Build /p:Configuration=$(buildConfiguration)'
 
+- task: BinSkim@3
+  displayName: BinSkim
+  inputs:
+    InputType: 'Basic'
+    Function: 'analyze'
+    AnalyzeTarget: 'artifacts\$(buildConfiguration)\*.dll;'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+  displayName: 'Post Analysis'
+  inputs:
+    BinSkim: true
+    CredScan: true
+    PoliCheck: true
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+
 - task: CopyFiles@2
   displayName: 'Copy artifacts directory to $(build.artifactstagingdirectory)'
   inputs:
     SourceFolder: '$(system.defaultworkingdirectory)'
     Contents: 'artifacts\**'
     TargetFolder: '$(build.artifactstagingdirectory)\artifacts'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-- task: BinSkim@3
-  displayName: BinSkim
-  inputs:
-    InputType: 'Basic'
-    Function: 'analyze'
-    AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - task: PublishBuildArtifacts@1
