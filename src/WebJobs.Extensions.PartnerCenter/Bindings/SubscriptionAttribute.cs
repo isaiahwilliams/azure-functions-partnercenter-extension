@@ -11,7 +11,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
     [Binding]
-    public sealed class SubscriptionAttribute : TokenBaseAttribute
+    public sealed class SubscriptionAttribute : AuthenticationAttribute
     {
         /// <summary>
         /// Gets or sets the identifier of the customer.

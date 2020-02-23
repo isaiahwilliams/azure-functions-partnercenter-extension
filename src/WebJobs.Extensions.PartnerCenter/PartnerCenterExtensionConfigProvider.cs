@@ -14,11 +14,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
     using Identity.Client;
     using Microsoft.Azure.KeyVault;
     using Microsoft.Azure.KeyVault.Models;
-    using Microsoft.Azure.Services.AppAuthentication;
     using Microsoft.Extensions.Logging;
     using Rest;
     using Store.PartnerCenter;
-    using Store.PartnerCenter.Extensions;
     using Store.PartnerCenter.Models.Auditing;
     using Store.PartnerCenter.Models.Customers;
     using Store.PartnerCenter.Models.Invoices;
@@ -81,75 +79,29 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
         /// <exception cref="ArgumentNullException">
         /// <paramref name="input"/> is null.
         /// </exception>
-        public async Task<IPartnerCredentials> GetCredentialsAsync(TokenBaseAttribute input)
+        public async Task<IPartnerCredentials> GetCredentialsAsync(AuthenticationAttribute input)
         {
-            AuthenticationResult authResult;
-            IConfidentialClientApplication app;
-            string applicationSecret = string.Empty;
-            string refreshToken = string.Empty;
-
-            input.AssertNotNull(nameof(input));
-
-            if (!string.IsNullOrEmpty(input.ApplicationSecretName) || !string.IsNullOrEmpty(input.RefreshTokenName))
+            if (!string.IsNullOrEmpty(input.AccessToken))
             {
-                if (string.IsNullOrEmpty(input.KeyVaultEndpoint))
-                {
-                    throw new ArgumentException("When using the name properties the Key Vault endpoint must be specified.");
-                }
-
-                using (IKeyVaultClient keyVaultClient = new KeyVaultClient(
-                    new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback)))
-                {
-                    if (!string.IsNullOrEmpty(input.ApplicationSecretName))
-                    {
-                        applicationSecret = await GetSecretAsync(
-                            keyVaultClient,
-                            input.KeyVaultEndpoint,
-                            input.ApplicationSecretName).ConfigureAwait(false);
-                    }
-
-                    if (!string.IsNullOrEmpty(input.RefreshTokenName))
-                    {
-                        refreshToken = await GetSecretAsync(
-                            keyVaultClient,
-                            input.KeyVaultEndpoint,
-                            input.RefreshTokenName).ConfigureAwait(false);
-                    }
-                }
+                return new FunctionExtensionCredentials(new AuthenticationToken(input.AccessToken, DateTimeOffset.Parse(input.ExpiresOn)));
             }
-
-            if (string.IsNullOrEmpty(applicationSecret))
+            else if (!string.IsNullOrEmpty(input.RefreshToken))
             {
-                applicationSecret = input.ApplicationSecret;
-            }
-
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                refreshToken = input.RefreshToken;
-            }
-
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                return await PartnerCredentials.GenerateByApplicationCredentialsAsync(
-                    input.ApplicationId,
-                    applicationSecret,
-                    input.TenantId).ConfigureAwait(false);
-            }
-            else
-            {
-                app = ConfidentialClientApplicationBuilder
+                IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
                     .Create(input.ApplicationId)
                     .WithAuthority(new Uri($"{input.Authority}/{input.TenantId}"))
-                    .WithClientSecret(applicationSecret)
+                    .WithClientSecret(input.ApplicationSecret)
                     .Build();
 
-                authResult = await app
+                AuthenticationResult authResult = await app
                     .AsRefreshTokenClient()
-                    .AcquireTokenByRefreshToken(input.Scopes.Split(','), refreshToken)
+                    .AcquireTokenByRefreshToken(input.Scopes.Split(','), input.RefreshToken)
                     .ExecuteAsync().ConfigureAwait(false);
 
                 return new FunctionExtensionCredentials(new AuthenticationToken(authResult.AccessToken, authResult.ExpiresOn));
             }
+
+            throw new Exception("Unable to authenticate because the required parameters were not specified.");
         }
 
         /// <summary>

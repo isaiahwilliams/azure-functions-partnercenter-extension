@@ -11,7 +11,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
     [Binding]
-    public sealed class AuditRecordAttribute : TokenBaseAttribute
+    public sealed class AuditRecordAttribute : AuthenticationAttribute
     {
         /// <summary>
         /// Gets or sets the end date of the audit record logs.
