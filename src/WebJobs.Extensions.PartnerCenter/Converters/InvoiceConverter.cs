@@ -43,7 +43,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
         /// </returns>
         public async Task<IEnumerable<Invoice>> ConvertAsync(InvoiceAttribute input, CancellationToken cancellationToken)
         {
-            IPartner operations = PartnerService.Instance.CreatePartnerOperations(
+            IPartner partner = PartnerService.Instance.CreatePartnerOperations(
                 await provider.GetCredentialsAsync(input).ConfigureAwait(false),
                 provider.GetHttpClient(input.ApplicationId));
             ResourceCollection<Invoice> invoices;
@@ -51,12 +51,12 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
 
             if (string.IsNullOrEmpty(input.InvoiceId))
             {
-                invoices = await operations.Invoices.GetAsync(cancellationToken).ConfigureAwait(false);
+                invoices = await partner.Invoices.GetAsync(cancellationToken).ConfigureAwait(false);
 
                 return invoices.Items;
             }
 
-            return new List<Invoice> { await operations.Invoices.ById(input.InvoiceId).GetAsync(cancellationToken).ConfigureAwait(false) };
+            return new List<Invoice> { await partner.Invoices.ById(input.InvoiceId).GetAsync(cancellationToken).ConfigureAwait(false) };
         }
     }
 }

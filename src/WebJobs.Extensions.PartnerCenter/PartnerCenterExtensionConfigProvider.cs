@@ -215,6 +215,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.PartnerCenter
                 .BindToInput<Invoice>(typeof(InvoiceConverter), this);
 
             context
+                .AddBindingRule<InvoiceLineItemAttribute>()
+                .BindToInput<List<InvoiceLineItem>>(typeof(InvoiceLineItemConverter), this);
+
+            context
                 .AddBindingRule<SubscriptionAttribute>()
                 .WhenIsNull(nameof(SubscriptionAttribute.SubscriptionId))
                 .BindToInput<List<Subscription>>(typeof(SubscriptionConverter), this);
